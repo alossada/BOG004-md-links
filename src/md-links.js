@@ -1,22 +1,55 @@
-const mdLinks = (args) => {
-    console.log("Argumentos desde MD :", args);
-    
-    const fs = require('fs'); // function system
+//-----Importamos Modulos de Node----//
+const{
+    converterPath,
+    validatePath,
+    isDir,
+    readFileContent,
+    readDirFiles,
+} = require('./node-methods.js')
+
+//-----Funcion Mdlinks-----//
+const mdLinks = (args) => new Promise ((resolve, reject) =>{
     const path = require('path');
 
-   //Resolve la ruta de relativa a absoluta
+    //Capturar ruta desde los argumentos
     const pathArgument = args[2];
-    const pathArgAbsolut = path.resolve(pathArgument).normalize();
-    
+    console.log('esto es el PATH ARGUMENT :', pathArgument);
+    console.log('Es ruta ABSOLUTA? :', path.isAbsolute(pathArgument));
+
+    //-----Convierte la ruta capturada en Absoluta-----//
+    const pathArgAbsolut = converterPath(pathArgument);
     console.log('Esto es el PATH ABSOLUT: ', pathArgAbsolut);
 
-    fs.stat(pathArgAbsolut, (err, stats) => {
-        if (err) throw err;
-        // console.log(`stats: ${JSON.stringify(stats)}`);
-        console.log('soy directorio?', stats.isDirectory());
+    //Invoca funcion validatePath
+    const validatePathResult = validatePath(pathArgAbsolut);
+    console.log('La ruta es VALIDA? :', validatePathResult);
+
+    //Condicional para validar ruta
+    if(validatePathResult){ //ingresa solo si la ruta es valida
+        console.log('Hola Margaret', isDir(pathArgAbsolut));
+        isDir(pathArgAbsolut)
+        .then((isDirResult) => {
+            console.log(isDirResult);
+            if(isDirResult){
+                console.log('Revisar recursividad')
+                const dirFiles = readDirFiles(pathArgAbsolut);
+                resolve(Promise.all(dirFiles));
+            }else{
+                console.log('Lectura del archivo, es ELSE');
+                const fileContent = readFileContent(pathArgAbsolut);// se debe revisar si es MD
+                resolve(fileContent);
+            }
+        })
+        .catch((error) => {
+            console.log(error)
         });
-    
-}
+    }else{
+        console.log('Else de ruta no valida');
+        const invalidPath = 'Ruta no valida';
+        reject(new Error(invalidPath));
+    }
+});
+
 
 module.exports = mdLinks;
 // 
