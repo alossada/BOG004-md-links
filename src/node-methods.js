@@ -2,65 +2,51 @@
 const fs = require('fs'); // file system
 const path = require('path'); 
 
-//---Resuelve y normaliza la ruta dada---//
-const converterPath = (pathToConvert) => {
-    let pathToConvertResult;
-    path.isAbsolute(pathToConvert) 
-        ? pathToConvertResult = pathToConvert 
-        : pathToConvertResult = path.resolve(pathToConvert).normalize();
-    return pathToConvertResult;
-    }
-
 //---Verifica si la ruta existe---//
-const validatePath = (path) => fs.existsSync(path);
+const validatePath = (isPath) => fs.existsSync(isPath);
 
-//---Verificar si es directorio---//
-const isDir = (pathToCheck) => new Promise((resolve) =>{
-    fs.stat(pathToCheck, (err, stats) => {
-        if (err) throw err;
-        const isDirResult = stats.isDirectory();
-        console.log('Es DIRECTORIO? :', isDirResult);
-        resolve(isDirResult);
-    });
-});
-
-//--- recorrer el contenido del directorio---//
-const readDirFiles = (checkContentDir) => {
-    const dirFiles = fs.readdirSync(checkContentDir);
-    console.log(dirFiles);
-    return dirFiles;
-};
-
-//---Revisar la extencion del archivo---//
-const fileExtension = (filePath) => {
-    const extension = path.extname(filePath);
-    return extension;
-}
-
-//-----Leer contenido de un archivo------//
-const readFileContent = (pathToRead) => {
-    fs.readFile(pathToRead, 'utf8', function(err, data){
-        if (err) throw err;
-        console.log(data);
-    });
-}
-
-//---Revisa si es archivo .md---//
-const isFileMd = (filePath) => {
-    const fileExtensionResult = fileExtension(filePath);
-    if(fileExtensionResult === '.md'){
-        return filePath;
-    }else{
-        const isFileMdError = 'No contiene archivos .md';
-        return isFileMdError;
+//---Convierte la ruta de relativa a absoluta---//
+const convertPathToAbsolut = (isPath) => {
+    if (path.isAbsolute(isPath)){
+        return isPath;
+    }else {
+        return path.resolve(isPath).normalize();
     }
 };
+
+//---Obtener Array de rutas .md---//
+const getMdFiles = (allMdFiles, isPath) => {
+    const isDirRes = fs.statSync(isPath).isDirectory(); //Verifica si la ruta es directorio (true or False)
+    if (isDirRes) { //Si es Directorio
+        const allDirFiles = fs.readdirSync(isPath); //Array con el contenido del directorio
+            // allDirFiles.forEach((oneFile) => {
+            //     const absolutPath = path.join(isPath, oneFile);
+            //     getMdFiles(allMdFiles, absolutPath)
+            // })
+        let absolutPath = allDirFiles.map((fileName) => path.join(isPath, fileName)); //Array de Rutas Modificadas
+            absolutPath.forEach((fileNamePath) => { 
+            getMdFiles(allMdFiles, fileNamePath)
+        });
+    }else {
+        const isMdFiles = path.extname(isPath); //Extencion del archivo
+            if(isMdFiles === '.md'){ //Si es archivo .md
+                allMdFiles.push(isPath);
+        }
+    }
+    console.log('QUE RETORNA getMdFiles: ', allMdFiles);  
+    return allMdFiles;  //Retorna array de Path .md
+};
+
+// //-----Leer contenido de un archivo------//
+// const readFileContent = (pathToRead) => {
+//     fs.readFile(pathToRead, 'utf8', function(err, data){
+//         if (err) throw err;
+//         console.log(data);
+//     });
+//}
 
 module.exports = {
-    converterPath,
+    convertPathToAbsolut,
     validatePath,
-    isDir,
-    readFileContent,
-    readDirFiles,
-    isFileMd,
+    getMdFiles,
 }
