@@ -8,14 +8,14 @@ const{
 } = require('./node-methods.js')
 
 //-----Funcion Mdlinks-----//
-const mdLinks = (args) => new Promise (() => {
+const mdLinks = (path, option = {validate: false}) => new Promise ((resolve, reject) => {
     
     //---Capturar ruta desde los argumentos---//
-    const pathArgument = args[2];
-    console.log('|    ✿ PATH ARGUMENT ✿    | --->', pathArgument);
+    // const pathArgument = args[2];
+    // console.log('|    ✿ PATH ARGUMENT ✿    | --->', pathArgument);
     
     //-----Convierte la ruta capturada en Absoluta-----//
-    const pathArgAbsolut = convertPathToAbsolut(pathArgument);
+    const pathArgAbsolut = convertPathToAbsolut(path);
     console.log('|    ✿ RUTA ABSOLUTA ✿    | --->', pathArgAbsolut);
 
     //----Validar si la ruta existe---//
@@ -23,46 +23,40 @@ const mdLinks = (args) => new Promise (() => {
     console.log(('|    ✿ RUTA VALIDA ✿   |'), validatePathRes);
 
     // //---Invoca funcion para obtener archivos recursivamente de la ruta capturada---//
-    // const mdFiles = getMdFiles([], pathArgument);
-    // console.log('|   ✿ ARRAYS DE ARCHIVOS .md ✿   | ---> ', mdFiles);
-
     let arrayMdFile = [];
     if (validatePathRes=== false) {
-        console.log('| ✿ NO EXISTEN ARCHIVOS ✿ |');
+        console.log('| ✿ LA RUTA NO EXISTE ✿ |');
     } else if (validatePathRes){
         const filesMd = getMdFiles(arrayMdFile, pathArgAbsolut);
-        console.log('|    ✿ ARCHIVOS .md ✿   |', filesMd);
         if(filesMd.length === 0){
-            console.log('| ✿ DIRECTORIO VACÍO ✿  |');
+            console.log('|     ✿ DIRECTORIO NO CONTIENE ARCHIVOS .md ✿     |');
         } else {
             console.log('|    ✿ ARCHIVOS ENCONTRADOS ✿   |', filesMd);
         }
     }else{
-        const invalidPath = '|     ✿ LA RUTA INGRESADA NO ES VÁLIDA  ✿   |';
-        console.log(invalidPath);
+        console.log('|     ✿ LA RUTA INGRESADA NO ES VÁLIDA ✿     |');
     };
-
-    const linksPromise = readFileContent(arrayMdFile)
+    
+    readFileContent(arrayMdFile)
         .then((objectLinks) =>{
             if(objectLinks.length === 0){
-                // console.log('No se han encontrado links dentro del archivo md... ✿ ✧ | |');
+                console.log('|     ✿ El archivo no contiene links ✿     |');
             }else{
-                // console.log('Lectura de los archivos:... ✿ ✧ | |');
-                // console.log('Links obtenidos:... ✿ ✧ | |');
-                return(objectLinks);
+                console.log('Que archivos encuentra?',objectLinks);
+                if(option.validate === true){
+                    httpPetition(objectLinks).then(response => {
+                        resolve(response)
+                    })
+                } else {
+                    resolve(objectLinks);
+                }
             }
         })        
         .catch((error) => {
             const errorMessage = 'Error';
             reject(error, errorMessage) 
         });
-
-    linksPromise.then(links => {
-        httpPetition(links).then(response => {
-            console.log('SE SUPONE QUE SON LINKS', response);
-        })
-    })
-})
+});
 
 
 module.exports = mdLinks;
