@@ -2,16 +2,22 @@
 const mdLinks = require('./index.js');
 const process = require('process');
 
-const allArguments = process.argv;
+const pathArg = process.argv[2]
+const optionArg = {}
 
-const cli = () => {
-    mdLinks(allArguments)
-    .then((response) => {
-        console.log(response)
-    })
-    .catch((e) => {
-        console.log(e)
-    })
-};
+if (process.argv.includes('--validate')) {
+    optionArg.validate = true;
+}
 
-cli();
+// if (process.argv.includes('--stats')) {
+//     optionsMd.stats = true;
+// }
+
+
+mdLinks(pathArg, optionArg)
+.then((response) => {
+    console.log(response)
+})
+.catch((e) => {
+    console.log(e)
+})
