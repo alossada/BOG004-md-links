@@ -2,9 +2,13 @@
 const fs = require('fs'); // file system
 const path = require('path'); 
 const { default: fetch } = require("node-fetch");
+const { resolve } = require('path');
 
-
-
+/**
+ * 
+ * @param {*} isPath 
+ * @returns 
+ */
 
 //---Verifica si la ruta existe---//
 const validatePath = (isPath) => fs.existsSync(isPath);
@@ -41,18 +45,14 @@ const getMdFiles = (allMdFiles, isPath) => {
 };
 
 //leer los archivos y extraer los links. Esta funcion me retorna un arreglo de objetos con los links encontados.
-const getLinks = (content, arrayMds) => {
+const getLinks = (content, arrayMds) => new Promise ((resolve) =>{ 
     const expReg1 = /\[([\w\s\d]+)\]\(((?:\/|https?:\/\/)[\w\d./?=#&_%~,.:-]+)\)/mg; // CAPTURAR TODOS LOS '[]()'
     const expReg2 = /\(((?:\/|https?:\/\/)[\w\d./?=#&_%~,.:-]+)\)/mg; // CAPTURAR LO QUE HAY DENTRO DE UN ()
     const expReg3 = /\[([\w\s\d]+)\]/g; // CAPTURAR LO QUE HAY DENTRO DE UN []
-    
     const fileContent = content;//lee el archivo
-    // console.log('fileContent: ', fileContent);
     const links = fileContent.match(expReg1);/* extraigo los links que coincidan con mi expresion regular
     match() se usa para obtener todas las ocurrencias de una expresión regular dentro de una cadena.*/
-    // console.log('links: ', links);
     let arrayLinks;
-
     if (links) {
         arrayLinks = links.map((myLinks) => {
             const myhref = myLinks.match(expReg2).join().slice(1, -1);//URL ()
@@ -62,12 +62,13 @@ const getLinks = (content, arrayMds) => {
                 text: mytext,
                 fileName: arrayMds,//Ruta del archivo donde se encontró el link.
             };
-        });        
+        });
+        resolve (arrayLinks)        
     } else if (links === null){
-        return [];
+        resolve ([]);
     }
-        return arrayLinks;    
-};
+    // return arrayLinks;    
+});
 
 //-----Leer contenido de un archivo------//
 const readFileContent = (arrayMds) => new Promise ((resolve) => {
@@ -78,10 +79,13 @@ const readFileContent = (arrayMds) => new Promise ((resolve) => {
                 const errorMessage = '| ✧ Empty File ✧  |';
                 console.log(errorMessage);
             } else {
-                mdArray.push(getLinks(data, element));
-                if (arrayMds.length === mdArray.length){
-                    resolve(mdArray.flat());
-                }
+                getLinks(data, element)
+                    .then((resArray)=>{
+                        mdArray.push(resArray)
+                        if (mdArray.length === arrayMds.length) {
+                            resolve(mdArray.flat());
+                        }
+                    })
             }
         });
     })
@@ -89,6 +93,7 @@ const readFileContent = (arrayMds) => new Promise ((resolve) => {
 
 // FUNCION QUE OBTIENE UN ARREGLO DE PROMESAS QUE RETORNAN OBJETOS
 const httpPetition = (arrObjLinks) => {
+    console.log('Desde node', arrObjLinks);
     const arrPromise = arrObjLinks.map((obj) => fetch(obj.href)
         .then((res) => ({
         href: obj.href,
@@ -101,7 +106,7 @@ const httpPetition = (arrObjLinks) => {
         href: obj.href,
         text: obj.text,
         file: obj.fileName,
-        status: 500,
+        status: 404,
         ok: 'FAIL'
         })));
     return Promise.all(arrPromise);
