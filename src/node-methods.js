@@ -10,9 +10,6 @@ const { resolve } = require('path');
  * @returns 
  */
 
-//---Verifica si la ruta existe---//
-const validatePath = (isPath) => fs.existsSync(isPath);
-
 //---Convierte la ruta de relativa a absoluta---//
 const convertPathToAbsolut = (isPath) => {
     if (path.isAbsolute(isPath)){
@@ -21,6 +18,9 @@ const convertPathToAbsolut = (isPath) => {
         return path.resolve(isPath).normalize();
     }
 };
+
+//---Verifica si la ruta existe---//
+const validatePath = (isPath) => fs.existsSync(isPath);
 
 //---Obtener Array de rutas .md---//
 const getMdFiles = (allMdFiles, isPath) => {
@@ -31,11 +31,7 @@ const getMdFiles = (allMdFiles, isPath) => {
                 const absolutPath = path.join(isPath, file);
                 getMdFiles(allMdFiles, absolutPath)
             })
-        // let absolutPath = allDirFiles.map((fileName) => path.join(isPath, fileName)); //Array de Rutas Modificadas
-        //     absolutPath.forEach((fileNamePath) => { 
-        //     getMdFiles(allMdFiles, fileNamePath)
-        // });
-    }else {
+    } else {
         const isMdFiles = path.extname(isPath); //Extencion del archivo
             if(isMdFiles === '.md'){ //Si es archivo .md
                 allMdFiles.push(isPath);
@@ -43,31 +39,30 @@ const getMdFiles = (allMdFiles, isPath) => {
     }
     return allMdFiles;  //Retorna array de Path .md
 };
-
-//leer los archivos y extraer los links. Esta funcion me retorna un arreglo de objetos con los links encontados.
+    
+//---Leer los archivos y extraer los links. [{links}] ---// 
 const getLinks = (content, arrayMds) => new Promise ((resolve) =>{ 
-    const expReg1 = /\[([\w\s\d]+)\]\(((?:\/|https?:\/\/)[\w\d./?=#&_%~,.:-]+)\)/mg; // CAPTURAR TODOS LOS '[]()'
-    const expReg2 = /\(((?:\/|https?:\/\/)[\w\d./?=#&_%~,.:-]+)\)/mg; // CAPTURAR LO QUE HAY DENTRO DE UN ()
-    const expReg3 = /\[([\w\s\d]+)\]/g; // CAPTURAR LO QUE HAY DENTRO DE UN []
-    const fileContent = content;//lee el archivo
-    const links = fileContent.match(expReg1);/* extraigo los links que coincidan con mi expresion regular
-    match() se usa para obtener todas las ocurrencias de una expresión regular dentro de una cadena.*/
+    const expReg1 = /\[([\w\s\d]+)\]\(((?:\/|https?:\/\/)[\w\d./?=#&_%~,.:-]+)\)/mg; //---links '[]()'---//
+    const expReg2 = /\(((?:\/|https?:\/\/)[\w\d./?=#&_%~,.:-]+)\)/mg; //--- Url () ---//
+    const expReg3 = /\[([\w\s\d]+)\]/g; //--- Nombre de Url [] ---//
+    const fileContent = content;//--- Lee el archivo ---//
+    const links = fileContent.match(expReg1);//--- trae todo lo que coincida con Regex de links ---//
     let arrayLinks;
     if (links) {
         arrayLinks = links.map((myLinks) => {
-            const myhref = myLinks.match(expReg2).join().slice(1, -1);//URL ()
-            const mytext = myLinks.match(expReg3).join().slice(1, -1);//Texto []
+            const myhref = myLinks.match(expReg2).join().slice(1, -1);//--- coincidencias con Url () ---//
+            const mytext = myLinks.match(expReg3).join().slice(1, -1);//--- Coincidencias con texto [] ---//
             return {
                 href: myhref,
                 text: mytext,
-                fileName: arrayMds,//Ruta del archivo donde se encontró el link.
+                fileName: arrayMds,//---Ruta del archivo donde se encontró el link---//
             };
         });
         resolve (arrayLinks)        
     } else if (links === null){
         resolve ([]);
     }
-    // return arrayLinks;    
+    
 });
 
 //-----Leer contenido de un archivo------//
@@ -93,7 +88,7 @@ const readFileContent = (arrayMds) => new Promise ((resolve) => {
 
 // FUNCION QUE OBTIENE UN ARREGLO DE PROMESAS QUE RETORNAN OBJETOS
 const httpPetition = (arrObjLinks) => {
-    console.log('Desde node', arrObjLinks);
+    // console.log('Desde node', arrObjLinks);
     const arrPromise = arrObjLinks.map((obj) => fetch(obj.href)
         .then((res) => ({
         href: obj.href,
