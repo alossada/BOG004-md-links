@@ -1,13 +1,13 @@
 // -----Importamos Modulos de Node----//
 // eslint-disable-next-line import/extensions
-const {convertPathToAbsolut, validatePath, getMdFiles, readFileContent, httpPetition} = require('./node-methods');
+  const {convertPathToAbsolut, validatePath, getMdFiles, readFileContent, httpPetition} = require('./node-methods');
 // -----Funcion Mdlinks-----//
-const mdLinks = (path, option = {validate: false}) => new Promise((resolve, reject) => {  
+  const mdLinks = (path, option = {validate: false}) => new Promise((resolve, reject) => {  
 //----Convertir la ruta a absoluta---//
   const pathArgAbsolut = convertPathToAbsolut(path);
 
 // ----Validar si la ruta existe---//
-const validatePathRes = validatePath(pathArgAbsolut);
+  const validatePathRes = validatePath(pathArgAbsolut);
 
 // --- declarar array vacio para guardar archivo .md desde getMdFiles---//
 let arrayMdFile = [];
