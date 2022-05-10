@@ -3,6 +3,7 @@ const mdLinks = require('./index.js');
 const process = require('process');
 const chalk = require('chalk');
 const { arrayTemplate, statusTemplate, totalLinks, linkStats } = require("./stats.js");
+const { help } = require('./help');
 
 const arguments = process.argv.slice(2);
 
@@ -11,7 +12,6 @@ switch (arguments.length) {
         console.log(chalk.redBright.bold('| ✿ PLEASE, ENTER A PATH ✿ |'));
         break;
     case 1:
-        //console.log('argumento[0]', arguments[0]);
         mdLinks(arguments[0], { validate: false })
             .then((response) => {
                 (console.log(`${arrayTemplate(response)}`));
@@ -20,9 +20,7 @@ switch (arguments.length) {
                 (err) => console.log(chalk.redBright.bold(err)));
         break;
     case 2:
-        //console.log('argumento[1]', arguments[1]);
         if (arguments[1] === '--validate') {
-            // console.log('argumento[0]', arguments[0]);
             mdLinks(arguments[0], { validate: true })
                 .then((response) => {
                     console.log(`${statusTemplate(response)}`);
@@ -35,9 +33,9 @@ switch (arguments.length) {
                 })
                 .catch((err) => console.log(chalk.redBright.bold(err)));
         }
-        // else if (argumentos[1] === '--help') {
-        //   console.log(chalk.cyan.bold(help));
-        // } 
+        else if (arguments[1] === '--help') {
+            console.log(chalk.cyan.bold(help));
+        } 
         else console.log(chalk.redBright.bold('| ✿ INVALID OPTION ✿ |'));
         break;
     case 3:
