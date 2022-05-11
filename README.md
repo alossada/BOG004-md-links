@@ -20,6 +20,7 @@ links rotos.
 
 ### 2. Diagramas de flujo
 
+![UserFlow](https://github.com/alossada/BOG004-md-links/blob/develop/assets/userFlow.png)
 
 ### 3. Instalación y uso de la librería
 
@@ -31,25 +32,28 @@ links rotos.
 
 - En la terminal ingresamos el comando **md-Links** seguido de la ruta absoluta o relativa de la ubicación del archivo y/o carpeta en la cual se buscaran los links.
   Ejemplo:
-
+  
+  ![<Path>](https://github.com/alossada/BOG004-md-links/blob/develop/assets/argumentPath.png)
 
 - Ingresando el comando **md-Links** seguido de la **ruta** y seguido del comando **--validate**, obtendremos las propiedades de los links encontrados.
   Ejemplo:
-
-
+  
+  ![--validate](https://github.com/alossada/BOG004-md-links/blob/develop/assets/validate.png)
 
 - Ingresando el comando **md-Links** seguido de la **ruta** y seguido del comando **--stats**, obtendremos algunos datos estadisticos(total de links y cantidad de links unicos).
   Ejemplo:
-
-
+  
+  ![--stats](https://github.com/alossada/BOG004-md-links/blob/develop/assets/stats.png)
 
 - Ingresando el comando **md-Links** seguido de la **ruta** y seguido de los comandos **--stats --validate** o **--validate --stats**, obtendremos la cantidad total de links que encontremos en ese archivo, el total de links unicos encontrados y el total de links rotos.
   Ejemplo:
 
-
+  ![--stats --validate](https://github.com/alossada/BOG004-md-links/blob/develop/assets/statsandvalidate.png)
 
 - Ingresando el comando **md-Links** seguido de la **ruta** y seguido del comando **--help**, obtendremos una tabla con ayuda.
   Ejemplo:
+ 
+  ![--help](https://github.com/alossada/BOG004-md-links/blob/develop/assets/help.png)
 
 ### 4. Autora
 
