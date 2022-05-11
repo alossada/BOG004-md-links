@@ -86,7 +86,7 @@ const readFileContent = (arrayMds) => new Promise((resolve, reject) => {
     })
 });
 
-// FUNCION QUE OBTIENE UN ARREGLO DE PROMESAS QUE RETORNAN OBJETOS
+// Peticion con Fetch
 const httpPetition = (arrObjLinks) => {
     // console.log('Desde node', arrObjLinks);
     const arrPromise = arrObjLinks.map((obj) => fetch(obj.href)

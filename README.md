@@ -30,10 +30,10 @@ links rotos.
 
 #### 3.2 Guia de uso de la librería
 
-- En la terminal ingresamos el comando **md-Links** seguido de la ruta absoluta o relativa de la ubicación del archivo y/o carpeta en la cual se buscaran los links.
+- En la terminal ingresamos el comando **md-Links** seguido de la **ruta** absoluta o relativa de la ubicación del archivo y/o carpeta en la cual se buscaran los links.
   Ejemplo:
   
-  ![<Path>](https://github.com/alossada/BOG004-md-links/blob/develop/assets/argumentPath.png)
+ 
 
 - Ingresando el comando **md-Links** seguido de la **ruta** y seguido del comando **--validate**, obtendremos las propiedades de los links encontrados.
   Ejemplo:
